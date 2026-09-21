@@ -18,3 +18,9 @@ db.sqlite3
 
 # DistilBERT model folder
 predictor/ml/distilbert/
+predictor/ml/models/
+predictor/ml/*.pkl
+
+# Logs
+*.log
+.env
