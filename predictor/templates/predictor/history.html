@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MoodSense History</title>
+</head>
+
+<body>
+
+    <h1>Analysis History</h1>
+
+    <a href="/">← Back to MoodSense</a>
+
+    <hr>
+
+    {% for analysis in analyses %}
+
+        <div>
+            <p><strong>Text:</strong> {{ analysis.text }}</p>
+            <p><strong>Emotion:</strong> {{ analysis.emotion|title }}</p>
+            <p><strong>Date:</strong> {{ analysis.created_at }}</p>
+        </div>
+
+        <hr>
+
+    {% empty %}
+
+        <p>No analyses yet.</p>
+
+    {% endfor %}
+
+</body>
+</html>

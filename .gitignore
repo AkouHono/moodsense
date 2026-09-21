@@ -1,0 +1,20 @@
+# Virtual environment
+venv/
+.venv/
+
+# Django
+__pycache__/
+*.py[cod]
+db.sqlite3
+
+# Environment variables
+.env
+
+# Machine Learning models
+*.safetensors
+*.pt
+*.pth
+*.bin
+
+# DistilBERT model folder
+predictor/ml/distilbert/

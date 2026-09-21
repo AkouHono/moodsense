@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MoodSense | AI Emotion Detection</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background:
+                radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.25), transparent 30%),
+                radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.25), transparent 30%),
+                linear-gradient(135deg, #111827, #312e81, #4c1d95);
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            color: #1f2937;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 760px;
+        }
+
+        /* Main Card */
+
+        .card {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 45px;
+            box-shadow:
+                0 25px 70px rgba(0, 0, 0, 0.35),
+                0 0 0 1px rgba(255, 255, 255, 0.15);
+
+            animation: appear 0.6s ease;
+        }
+
+        @keyframes appear {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Header */
+
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+
+            font-size: 42px;
+            font-weight: 800;
+
+            background: linear-gradient(
+                90deg,
+                #6366f1,
+                #8b5cf6,
+                #ec4899
+            );
+
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-icon {
+            font-size: 38px;
+        }
+
+        .subtitle {
+            margin-top: 10px;
+            font-size: 16px;
+            color: #6b7280;
+        }
+
+        .powered {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            background: #f3f4ff;
+            color: #6366f1;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Form */
+
+        .form-section {
+            margin-top: 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #374151;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 170px;
+
+            padding: 18px 20px;
+
+            border: 2px solid #e5e7eb;
+            border-radius: 18px;
+
+            background: #f9fafb;
+
+            resize: vertical;
+
+            font-size: 16px;
+            line-height: 1.6;
+            font-family: inherit;
+
+            color: #1f2937;
+
+            outline: none;
+
+            transition: all 0.25s ease;
+        }
+
+        textarea::placeholder {
+            color: #9ca3af;
+        }
+
+        textarea:focus {
+            background: white;
+            border-color: #6366f1;
+
+            box-shadow:
+                0 0 0 4px rgba(99, 102, 241, 0.12);
+
+            transform: translateY(-1px);
+        }
+
+        /* Button */
+
+        button {
+            width: 100%;
+            margin-top: 18px;
+
+            padding: 16px;
+
+            border: none;
+            border-radius: 16px;
+
+            background: linear-gradient(
+                135deg,
+                #6366f1,
+                #7c3aed
+            );
+
+            color: white;
+
+            font-size: 16px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 10px 25px rgba(99, 102, 241, 0.3);
+
+            transition: all 0.25s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 14px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Result */
+
+        .result {
+            margin-top: 30px;
+
+            padding: 30px;
+
+            border-radius: 22px;
+
+            text-align: center;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f5f3ff,
+                    #eef2ff
+                );
+
+            border: 1px solid #e0e7ff;
+
+            animation: resultAppear 0.5s ease;
+        }
+
+        @keyframes resultAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.96);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .result-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7280;
+
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+
+            margin-bottom: 15px;
+        }
+
+        .emoji {
+            font-size: 60px;
+            margin-bottom: 12px;
+
+            animation: float 2s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-6px);
+            }
+        }
+
+        .emotion {
+            font-size: 34px;
+            font-weight: 800;
+
+            background: linear-gradient(
+                90deg,
+                #6366f1,
+                #8b5cf6
+            );
+
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .confidence {
+            margin-top: 10px;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        /* Information cards */
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+
+            margin-top: 30px;
+        }
+
+        .feature {
+            padding: 16px 10px;
+
+            text-align: center;
+
+            border-radius: 14px;
+
+            background: #f9fafb;
+
+            border: 1px solid #f0f0f0;
+        }
+
+        .feature-icon {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
+        .feature-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #374151;
+        }
+
+        .feature-text {
+            margin-top: 3px;
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        /* Footer */
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+
+            color: #9ca3af;
+            font-size: 12px;
+        }
+
+        .footer strong {
+            color: #6366f1;
+        }
+
+        /* Responsive */
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 15px;
+            }
+
+            .card {
+                padding: 28px 20px;
+                border-radius: 22px;
+            }
+
+            .logo {
+                font-size: 34px;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            textarea {
+                min-height: 140px;
+            }
+
+            .emotion {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <!-- HEADER -->
+
+        <div class="header">
+
+            <div class="logo">
+                <span class="logo-icon">🧠</span>
+                MoodSense
+            </div>
+
+            <div class="subtitle">
+                Understand the emotion behind your words
+            </div>
+
+            <div class="powered">
+                ✨ Powered by AI · DistilBERT
+            </div>
+
+        </div>
+
+
+        <!-- FORM -->
+
+        <div class="form-section">
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <label for="id_text">
+                    💭 What is on your mind?
+                </label>
+
+                <div class="input-wrapper">
+                    <textarea
+                        name="text"
+                        id="id_text"
+                        placeholder="Write something about how you feel..."
+                        required
+                    ></textarea>
+                </div>
+
+                <button type="submit">
+                    🔍 Analyze My Emotion
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- RESULT -->
+
+        {% if emotion %}
+
+        <div class="result">
+
+            <div class="result-label">
+                Detected Emotion
+            </div>
+
+            <div class="emoji">
+
+                {% if emotion == "joy" %}
+                    😊
+                {% elif emotion == "sadness" %}
+                    😢
+                {% elif emotion == "anger" %}
+                    😡
+                {% elif emotion == "fear" %}
+                    😨
+                {% elif emotion == "love" %}
+                    ❤️
+                {% elif emotion == "surprise" %}
+                    😲
+                {% endif %}
+
+            </div>
+
+            <div class="emotion">
+                {{ emotion|title }}
+            </div>
+
+            <div class="confidence">
+                MoodSense analyzed the emotional context of your message.
+            </div>
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- FEATURES -->
+
+        <div class="features">
+
+            <div class="feature">
+
+                <div class="feature-icon">
+                    🤖
+                </div>
+
+                <div class="feature-title">
+                    AI Powered
+                </div>
+
+                <div class="feature-text">
+                    DistilBERT model
+                </div>
+
+            </div>
+
+
+            <div class="feature">
+
+                <div class="feature-icon">
+                    ⚡
+                </div>
+
+                <div class="feature-title">
+                    Fast Analysis
+                </div>
+
+                <div class="feature-text">
+                    Instant prediction
+                </div>
+
+            </div>
+
+
+            <div class="feature">
+
+                <div class="feature-icon">
+                    🔐
+                </div>
+
+                <div class="feature-title">
+                    Private
+                </div>
+
+                <div class="feature-text">
+                    Your text stays protected
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- FOOTER -->
+
+        <div class="footer">
+
+            MoodSense · AI Emotion Detection
+            <br>
+
+            Built with ❤️ by <strong>Fleva</strong>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
