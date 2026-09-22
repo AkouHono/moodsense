@@ -1,10 +1,19 @@
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
+import os
 
-MODEL_PATH = "predictor/ml/distilbert"
+MODEL_PATH = os.environ["MODEL_PATH"]
+HF_TOKEN = os.environ["HF_TOKEN"]
 
-tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
-model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
+tokenizer = AutoTokenizer.from_pretrained(
+    MODEL_PATH,
+    token=HF_TOKEN
+)
+
+model = AutoModelForSequenceClassification.from_pretrained(
+    MODEL_PATH,
+    token=HF_TOKEN
+)
 
 model.eval()
 
