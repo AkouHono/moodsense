@@ -1,10 +1,8 @@
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
-import torch
-
 MODEL_PATH = "honodev/moodsense-distilbert"
 
 tokenizer = None
 model = None
+torch = None
 
 id2label = {
     0: "anger",
@@ -17,11 +15,20 @@ id2label = {
 
 
 def load_model():
-    global tokenizer, model
+    global tokenizer, model, torch
 
     if tokenizer is None or model is None:
+        import torch as torch_module
+        from transformers import (
+            AutoTokenizer,
+            AutoModelForSequenceClassification
+        )
+
+        torch = torch_module
+
         tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
         model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
+
         model.eval()
 
 
