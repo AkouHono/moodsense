@@ -1,21 +1,10 @@
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
-import os
 
-MODEL_PATH = os.environ["MODEL_PATH"]
-HF_TOKEN = os.environ["HF_TOKEN"]
+MODEL_PATH = "honodev/moodsense-distilbert"
 
-tokenizer = AutoTokenizer.from_pretrained(
-    MODEL_PATH,
-    token=HF_TOKEN
-)
-
-model = AutoModelForSequenceClassification.from_pretrained(
-    MODEL_PATH,
-    token=HF_TOKEN
-)
-
-model.eval()
+tokenizer = None
+model = None
 
 id2label = {
     0: "anger",
@@ -27,7 +16,18 @@ id2label = {
 }
 
 
+def load_model():
+    global tokenizer, model
+
+    if tokenizer is None or model is None:
+        tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
+        model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
+        model.eval()
+
+
 def predict_emotion(text):
+    load_model()
+
     inputs = tokenizer(
         text,
         return_tensors="pt",
