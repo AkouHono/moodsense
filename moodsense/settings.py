@@ -46,8 +46,8 @@ IS_PRODUCTION = os.environ.get("DJANGO_PRODUCTION", "False") == "True"
 
 if IS_PRODUCTION:
     # HTTPS
-    SECURE_SSL_REDIRECT = True
-    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = False
+    # SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
     # Secure cookies
     SESSION_COOKIE_SECURE = True

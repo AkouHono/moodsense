@@ -33,3 +33,5 @@ def predict_emotion(text):
     prediction = torch.argmax(outputs.logits, dim=1).item()
 
     return id2label[prediction]
+
+#http://localhost:8000/
